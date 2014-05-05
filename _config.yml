@@ -8,7 +8,7 @@ url:              http://cycloptivity.net
 owner:
   name:           Sam Wilson
   avatar:         avatar.jpg
-  bio:            "My name is Sam Wilson. By day I work with opensource software. By night its actually pretty similar..."
+  bio:            "My name is Sam Wilson. I am a sys admin / info sec / devops geek."
   email:          
   # Social networking links used in footer. Update and remove as you like.
   twitter:        kahnau 
@@ -20,7 +20,7 @@ owner:
   #flickr:         
   #tumblr:         
   # For Google Authorship https://plus.google.com/authorship
-  google_plus:   
+  google_plus:  swilsonau@gmail.com
 
 # Background image to be tiled on all pages
 background: 
