@@ -3,7 +3,7 @@ layout: post
 title: First post!
 description: "Getting off the ground with a blog"
 modified: 
-tags:
+tags: [General]
 image:
   feature:
   credit:
