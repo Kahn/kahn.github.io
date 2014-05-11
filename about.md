@@ -20,4 +20,4 @@ I've continued to specialised with Redhat Enterprise Linux. I've explored and am
 
 I tend to be that SELinux guy in the teams I work with (Having done the exam probably helped!). I generally have a fairly paranoid security background after spending some time as a infosec consultant.
 
-When I am not spending time with my beautiful wife, [fixing something](../images/geek.png) or indulging in my steam library you may find me on a push bike.
+When I am not spending time with my beautiful wife, [fixing something](../images/geek.png) or indulging in my [steam library](http://steamcommunity.com/id/cycloptivity/) you may find me on a push bike.
