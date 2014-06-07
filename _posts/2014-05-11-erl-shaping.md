@@ -20,8 +20,6 @@ Enter my recent WRT54GL replacement, the Ubiquiti [Edge Router Lite](http://www.
 
 ## The network
 
-I really enjoy simplicity of the fantastic [asciiflow.com](http://asciiflow.com/). So here you can enjoy a network diagram in ascii!
-
 ~~~
 +-----------------+         XXXX  Wireless                             
 | Guest Client    |                                                    
