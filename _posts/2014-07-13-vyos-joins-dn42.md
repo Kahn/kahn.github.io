@@ -30,7 +30,7 @@ After sharing the pre-shared key with your peer we move onto config.
 
 Your peer will likely be running OpenVPN and actually using its config file syntax. Take this file for example.
 
-```
+~~~
 mode p2p
 rport 1194
 lport 1194
@@ -52,11 +52,11 @@ script-security 2
 status /var/log/openvpn_status_peer.log
 log-append /var/log/openvpn_peer.log
 keepalive 10 60
-```
+~~~
 
 Now we can convert to VyOS configuration statements.
 
-```
+~~~
 set interfaces openvpn vtun1 encryption 'bf128'
 set interfaces openvpn vtun1 hash 'sha1'
 set interfaces openvpn vtun1 local-address '192.168.0.1'
@@ -68,7 +68,7 @@ set interfaces openvpn vtun1 remote-address '192.168.1.1'
 set interfaces openvpn vtun1 remote-host '192.0.2.2'
 set interfaces openvpn vtun1 remote-port '1194'
 set interfaces openvpn vtun1 shared-secret-key-file '/config/auth/peer.key'
-```
+~~~
 
 VyOS seems to expose most of the more arcane OpenVPN configuration statements via the ```set interfaces openvpn vtun1 openvpn-option``` command, so you should be able to match your peers configuration. By default VyOS will run the OpenVPN processes with a ```--ping 10 --ping-restart 60``` so you can omit that.
 
