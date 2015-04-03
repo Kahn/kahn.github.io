@@ -3,7 +3,7 @@ layout: post
 title: Cloudrouter.org goes live
 description: "Cloudrouter.org goes live"
 modified: 
-tags: [General] [Cloudrouter]
+tags: [General, Cloudrouter]
 image:
   feature:
   credit:
