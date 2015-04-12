@@ -1,4 +1,5 @@
-yout: post
+---
+layout: post
 title: Yubikey NEO for GPG, SSH and Profit
 description: "A setup guide to configure Yubikey Neo smart card"
 modified: 
