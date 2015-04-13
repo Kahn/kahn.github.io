@@ -1,4 +1,5 @@
-yout: post
+---
+layout: post
 title: Yubikey NEO for GPG, SSH and Profit
 description: "A setup guide to configure Yubikey Neo smart card"
 modified: 
@@ -113,6 +114,7 @@ Lets format it!
 
 Once we are done we will stop the array to unplug the USB keys
 
+    umount /dev/md0
     mdadm -S md0
 
 To re-use this array next time we scan for existing RAID with both disks plugged in
