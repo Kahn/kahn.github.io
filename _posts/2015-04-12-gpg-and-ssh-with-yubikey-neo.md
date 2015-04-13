@@ -281,7 +281,43 @@ Instead its much easier to just hack on this via trusty ~/.bashrc
     
 ### GPG
 
-[[TODO - Importing onto daily machine]]
+On your daily machine we can now publish your primary pub.key as well as import the smartcard for daily use.
+
+To generate the private key stubs and inform your daily GPG of the smartcard run
+
+    gpg2 --card-status
+
+After which you should see your smartcard and offline master listed in 
+
+    gpg2 --list-secret-keys
+
+## Other pain points
+
+### Smartcard fetch
+
+There is an open issue here where running
+
+    gpg2 --card-edit
+    fetch
+
+actually fails for me where GPG will search for the smartcards signing key ID while actually getting the master offline key ID. Thus the operation fails.
+
+As a workaround you can totally pull the key with curl =\
+
+    http://www.cycloptivity.net/6E03FC34.txt | gpg2 --import
+
+### Missing Serial Numbers
+
+In [Donncha O'Cearbhaill's](http://donncha.is/2014/07/problems-using-an-openpgp-smartcard-for-ssh-with-gpg-agent/) very helpful post I found the key to swapping smartcards to avoid the "Please insert Serial Number X" error.
+
+When changing cards first drop your private key
+
+    rm ~/.gnupg/private-keys-v1.d/<PRIVATE KEY ID>.key
+
+Then, after a reboot import your smartcard details
+
+    gpg2 --card-status
+    ssh-add -l
 
 ## References
 
@@ -308,4 +344,5 @@ These posts helped me out a lot when writing this! YMMV
 [http://dst.lbl.gov/ksblog/2011/05/xfce-without-gpg-agent/](http://dst.lbl.gov/ksblog/2011/05/xfce-without-gpg-agent/)
 
 [http://docs.xfce.org/xfce/xfce4-session/advanced](http://docs.xfce.org/xfce/xfce4-session/advanced)
-### 
+
+[http://donncha.is/2014/07/problems-using-an-openpgp-smartcard-for-ssh-with-gpg-agent/](http://donncha.is/2014/07/problems-using-an-openpgp-smartcard-for-ssh-with-gpg-agent/)
