@@ -2,7 +2,7 @@ title:            cycloptivity.net
 description:      Scribblings on Devops, InfoSec, FOSS
 disqus_shortname: cycloptivitynet
 #Your site's domain goes here. Leave localhost server or blank when working locally.
-url:              https://cycloptivity.net
+url:              http://cycloptivity.net
 
 # Owner/author information
 owner:
