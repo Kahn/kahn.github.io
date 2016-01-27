@@ -73,86 +73,82 @@ A few moving parts to capture here on CentOS 7.
 
 **Kernel Configuration**
 
-```
-/etc/sysctl.conf
-...
-# Enable global forwarding
-net.ipv6.conf.all.forwarding = 1
-# Accept IPv6 RA, despite forwarding enabled
-net.ipv6.conf.all.accept_ra = 2
-# Proxy neighbour discovery protocol to downstream routers
-net.ipv6.conf.all.proxy_ndp = 1
-```
+      /etc/sysctl.conf
+      ...
+      # Enable global forwarding
+      net.ipv6.conf.all.forwarding = 1
+      # Accept IPv6 RA, despite forwarding enabled
+      net.ipv6.conf.all.accept_ra = 2
+      # Proxy neighbour discovery protocol to downstream routers
+      net.ipv6.conf.all.proxy_ndp = 1
 
 **Network Configuration**
 
-```
-/etc/sysconfig/network-scripts/ifcfg-eth0
-TYPE="Ethernet"
-BOOTPROTO="dhcp"
-DEFROUTE="yes"
-PEERDNS="yes"
-PEERROUTES="yes"
-IPV4_FAILURE_FATAL="no"
-IPV6INIT="yes"
-IPV6_AUTOCONF="yes"
-IPV6_DEFROUTE="yes"
-IPV6_PEERDNS="yes"
-IPV6_PEERROUTES="yes"
-IPV6_FAILURE_FATAL="no"
-NAME="eth0"
-DEVICE="eth0"
-ONBOOT="yes"
+      /etc/sysconfig/network-scripts/ifcfg-eth0
+      TYPE="Ethernet"
+      BOOTPROTO="dhcp"
+      DEFROUTE="yes"
+      PEERDNS="yes"
+      PEERROUTES="yes"
+      IPV4_FAILURE_FATAL="no"
+      IPV6INIT="yes"
+      IPV6_AUTOCONF="yes"
+      IPV6_DEFROUTE="yes"
+      IPV6_PEERDNS="yes"
+      IPV6_PEERROUTES="yes"
+      IPV6_FAILURE_FATAL="no"
+      NAME="eth0"
+      DEVICE="eth0"
+      ONBOOT="yes"
+      
+      /etc/sysconfig/network-scripts/ifcfg-sit1
+      DEVICE=sit1
+      BOOTPROTO=none
+      ONBOOT=yes
+      IPV6INIT=yes
+      IPV6_TUNNELNAME=sit1
+      IPV6TUNNELIPV4=192.0.2.2
+      IPV6TUNNELIPV4LOCAL=192.0.2.1
+      IPV6ADDR=2001:DB8::1/66
+      IPV6_MTU=1280
+      TYPE=sit
 
-/etc/sysconfig/network-scripts/ifcfg-sit1
-DEVICE=sit1
-BOOTPROTO=none
-ONBOOT=yes
-IPV6INIT=yes
-IPV6_TUNNELNAME=sit1
-IPV6TUNNELIPV4=192.0.2.2
-IPV6TUNNELIPV4LOCAL=192.0.2.1
-IPV6ADDR=2001:DB8::1/66
-IPV6_MTU=1280
-TYPE=sit
-```
 
 **OpenVPN**
 
 Nothing to complicated here. A site-to-site UDP tunnel using a static key (no PFS for you).
 
-```
-mode p2p
-rport 1194
-lport 1194
-remote home.example.org
-proto udp
-dev-type tun
-dev vtun0
-secret /etc/openvpn/home.key
-persist-key
-persist-tun
-ifconfig 192.0.2.1 192.0.2.2
-float
-script-security 2
-status /var/log/openvpn_status_home.log
-log-append /var/log/openvpn_home.log
-keepalive 10 60
-cipher AES-128-CBC
-auth SHA256
-user nobody
-group nobody
-```
+      mode p2p
+      rport 1194
+      lport 1194
+      remote home.example.org
+      proto udp
+      dev-type tun
+      dev vtun0
+      secret /etc/openvpn/home.key
+      persist-key
+      persist-tun
+      ifconfig 192.0.2.1 192.0.2.2
+      float
+      script-security 2
+      status /var/log/openvpn_status_home.log
+      log-append /var/log/openvpn_home.log
+      keepalive 10 60
+      cipher AES-128-CBC
+      auth SHA256
+      user nobody
+      group nobody
+
 
 **FirewallD**
 
 There is a bit of hackery here because FirewallD doesn't really support complex (?) use cases like routing, good thing its still just *iptables*.
 
-```
-firewall-cmd --direct --permanent --add-rule ipv6 filter FORWARD 0 -i sit1 -j ACCEPT
-firewall-cmd --direct --permanent --add-rule ipv4 filter INPUT 0 -i tun0 -p 41 -j ACCEPT
-firewall-cmd --complete-reload
-```
+
+      firewall-cmd --direct --permanent --add-rule ipv6 filter FORWARD 0 -i sit1 -j ACCEPT
+      firewall-cmd --direct --permanent --add-rule ipv4 filter INPUT 0 -i tun0 -p 41 -j ACCEPT
+      firewall-cmd --complete-reload
+
 
 This does still need to be cleaned up a little bit but should give you the right direction.
 
@@ -177,20 +173,19 @@ There are a couple of daemons that will manage this for you and is more or less 
 
 Somehow I ended up building **ndppd**, I have opened some work I want to do (get it into EPEL and support SystemD) but for now I have just started the daemon manually.
 
-```
-/etc/ndppd.conf
-route-ttl 30000
-proxy eth0 {
-   router yes
-   timeout 500
-   ttl 30000
-   rule 2001:DB8::/64 {
-      static
-   }
-}
+      /etc/ndppd.conf
+      route-ttl 30000
+      proxy eth0 {
+         router yes
+         timeout 500
+         ttl 30000
+         rule 2001:DB8::/64 {
+            static
+         }
+      }
+      
+      $ ndppd -d
 
-$ ndppd -d
-```
 
 Great! If you run a ping now from your home network out to an Internet address like *ipv6.google.com* chances are it should be working. If not *tcpdump -i sit1 icmp6* is your friend!
 
@@ -204,68 +199,65 @@ Even though we are using dhcpv6-server the Edgerouter must still run the router 
 
 Is now a good time to bring up that your Android device won't work? - See http://www.techrepublic.com/article/androids-lack-of-dhcpv6-support-poses-security-and-ipv6-deployment-issues/
 
-```
-ethernet eth1 {
-    address 192.168.1.1/24
-    address 2001:DB8:2000:1/67
-    duplex auto
-    ipv6 {
-        router-advert {
-            managed-flag true
-            other-config-flag true
-            prefix 2001:DB8:2000:1/67 {
-                autonomous-flag false
-            }
-            send-advert true
-        }
-    }
-    speed auto
-}
-openvpn vtun0 {
-    description syd1.example.org
-    encryption aes128
-    hash sha256
-    local-address 192.0.2.2 {
-    }
-    local-port 1194
-    mode site-to-site
-    protocol udp
-    remote-address 192.0.2.1
-    remote-host syd1.example.org
-    remote-port 1194
-    shared-secret-key-file /config/auth/home.key
-}
-tunnel tun0 {
-    address 2001:DB8::2/66
-    description "IPv6 Tunnel"
-    encapsulation sit
-    local-ip 192.0.2.2
-    mtu 1280
-    remote-ip 192.0.2.1
-}
-```
+      ethernet eth1 {
+          address 192.168.1.1/24
+          address 2001:DB8:2000:1/67
+          duplex auto
+          ipv6 {
+              router-advert {
+                  managed-flag true
+                  other-config-flag true
+                  prefix 2001:DB8:2000:1/67 {
+                      autonomous-flag false
+                  }
+                  send-advert true
+              }
+          }
+          speed auto
+      }
+      openvpn vtun0 {
+          description syd1.example.org
+          encryption aes128
+          hash sha256
+          local-address 192.0.2.2 {
+          }
+          local-port 1194
+          mode site-to-site
+          protocol udp
+          remote-address 192.0.2.1
+          remote-host syd1.example.org
+          remote-port 1194
+          shared-secret-key-file /config/auth/home.key
+      }
+      tunnel tun0 {
+          address 2001:DB8::2/66
+          description "IPv6 Tunnel"
+          encapsulation sit
+          local-ip 192.0.2.2
+          mtu 1280
+          remote-ip 192.0.2.1
+      }
 
 **Service Configuration**
 
 Since we have no SLAAC here the stateful dhcpv6-server needs to hand out name-servers and manage IP assignment within the allocated space 2001:DB8:2000::2 -> 2001:DB8:2000::1999.
 
-```
-dhcpv6-server {
-    shared-network-name lan {
-        subnet 2001:DB8:2000::/67 {
-            address-range {
-                prefix 2001:DB8:2000::/67 {
-                }
-                start 2001:DB8:2000::2 {
-                    stop 2001:DB8:2000::1999
-                }
-            }
-            name-server 2001:4860:4860::8888
-            name-server 2001:4860:4860::4444
-        }
-    }
-}
-```
+      dhcpv6-server {
+          shared-network-name lan {
+              subnet 2001:DB8:2000::/67 {
+                  address-range {
+                      prefix 2001:DB8:2000::/67 {
+                      }
+                      start 2001:DB8:2000::2 {
+                          stop 2001:DB8:2000::1999
+                      }
+                  }
+                  name-server 2001:4860:4860::8888
+                  name-server 2001:4860:4860::4444
+              }
+          }
+      }
+
 
 ### Closing thoughts
 
